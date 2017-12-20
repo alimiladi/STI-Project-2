@@ -77,6 +77,9 @@
 				//Checking whether fields are correctly set by user
 				if(isset($_POST['Username']) && isset($_POST['Password'])){
 
+				//Password crypting
+				$_POST['Password']=crypt($_POST['Password']);
+
 				//Checking for checkboxes validity
 					if(isset($_POST['active'])){
 						if(isset($_POST['admin'])){
