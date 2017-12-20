@@ -66,6 +66,9 @@
 						    PDO::ERRMODE_EXCEPTION);
 				//Checking whether fields are correctly set by user
 				if(isset($_POST['Password'])){
+					// Crypting the password with the hash() function
+					$_POST['Password']= hash('sha256', $_POST['Password']);				
+					
 					$dbconn->exec("UPDATE users SET password = '{$_POST['Password']}' WHERE username = '$username';");
 				}
 				// Close file db connection

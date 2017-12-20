@@ -37,13 +37,19 @@
 			// Set errormode to exceptions
 			$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-			// Look in the DB if the username/password exist, are correct, and that the user is active.
-			$result = $db->query("SELECT COUNT(*) as count FROM users WHERE username = '$username' AND password = '$password' AND active= 1");
+			// We get the user's data stored in the DB
+			$result =  $db->query("SELECT * FROM users WHERE username = '$username'");
+			    
+			// We get the values of each row of the users table in the DB
+			foreach($result as $row) {      
+				$hashStored = $row['password'];
+				$activeStored = $row['active'];
+				$adminStored = $row['admin'];
+			}
+			
+			// If hashes correspond we can go further
+			if(hash('sha256', $password) == $hashStored && $activeStored == 1) {
 
-			$count = $result->fetchColumn();
-
-			// $count takes values 0 or 1 depending on whether the credentials are correct and the user is active.
-			if ($count == 1){
 
 				// Case where the credentials are correct and the user is active.
 				$_SESSION['login_user'] = $username;

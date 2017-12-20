@@ -95,21 +95,21 @@
 							'id' => '0',
 							'username' => 'admin',
 							'active' => 1,
-							'password' => 'admin',
+							'password' => hash('sha256', 'admin'),
 							'admin' => 1
 						),
 						array(
 							'id' => '1',
 							'username' => 'bob',
 							'active' => 1,
-							'password' => 'bob',
+							'password' => hash('sha256', 'bob'),
 							'admin' => 0
 						),
 						array(
 							'id' => '2',
 							'username' => 'alice',
 							'active' => 1,
-							'password' => 'alice',
+							'password' => hash('sha256', 'alice'),
 							'admin' => 0
 						)
 						);
