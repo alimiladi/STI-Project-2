@@ -9,7 +9,7 @@ A second phase of the first STI project aiming to add  more security features to
 
 -	First clone the repo
 -	Place yourself at the root of the repo
--	In your command line or `Docker-Toolbox` type 
+-	In your command line or `Docker QuickStart Terminal` type 
 
 ```bash
 docker build --rm -t sti/securephpserver .
