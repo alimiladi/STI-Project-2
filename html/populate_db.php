@@ -26,7 +26,8 @@
 
 				// Create (connect to) SQLite database in file
 				$file_db = new PDO('sqlite:/var/www/databases/database.sqlite');
-
+				// Disabling emulated prepared statements
+				$file_db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 				// Set errormode to exceptions
 				$file_db->setAttribute(PDO::ATTR_ERRMODE,
 						    PDO::ERRMODE_EXCEPTION);
@@ -36,24 +37,27 @@
 				**************************************/
 
 				// Drop table messages from file db
-				$file_db->exec("DROP TABLE IF EXISTS messages");
-				$file_db->exec("DROP TABLE IF EXISTS users");
+				$drop = $file_db->prepare("DROP TABLE IF EXISTS messages");
+				$drop->execute();
+				$drop = $file_db->prepare("DROP TABLE IF EXISTS users");
+				$drop->execute();
 
 				/**************************************
 				* Create tables                       *
 				**************************************/
 				// Creating the two tables for storing the users and the messages.
 				// There is no boolean in sqlite so we use integers to represent the flags 'admin' and 'active'.
-				$file_db->exec("CREATE TABLE IF NOT EXISTS users(
+				$create = $file_db->prepare("CREATE TABLE IF NOT EXISTS users(
 					  id INTEGER PRIMARY KEY AUTOINCREMENT,
 					  username TEXT,
 					  active INTEGER,
 					  password TEXT,
 					  admin INTEGER
 				)");
+				$create->execute();
 
 				// Create table messages.
-				$file_db->exec("CREATE TABLE IF NOT EXISTS messages (
+				$create = $file_db->prepare("CREATE TABLE IF NOT EXISTS messages (
 					  id INTEGER PRIMARY KEY AUTOINCREMENT,
 					  title TEXT,
 					  message TEXT,
@@ -63,6 +67,7 @@
 					  FOREIGN KEY(sender_id) REFERENCES users(id),
 					  FOREIGN KEY(receiver_id) REFERENCES users(id)
 				)");
+				$create->execute();
 
 				/**************************************
 				* Set initial data                    *
@@ -121,13 +126,15 @@
 
 				foreach ($messages as $m) {
 					$formatted_time = date('Y-m-d H:i:s', $m['time']);
-					$file_db->exec("INSERT INTO messages (title, message, time, sender_id, receiver_id)
-						VALUES ('{$m['title']}', '{$m['message']}', '{$formatted_time}','{$m['sender_id']}', '{$m['receiver_id']}')");
+					$insert = $file_db->prepare("INSERT INTO messages (title, message, time, sender_id, receiver_id)
+						VALUES (:title, :message, :time, :sender_id, :receiver_id)");
+					$insert->execute(array('title' => $m['title'], 'message' => $m['message'], 'time' => $formatted_time, 'sender_id' => $m['sender_id'], 'receiver_id' => $m['receiver_id']));
 				}
 
 				foreach($users as $u){
-					$file_db->exec("INSERT INTO users (username, active, password, admin)
-						VALUES ('{$u['username']}', '{$u['active']}', '{$u['password']}', '{$u['admin']}')");
+					$insert = $file_db->prepare("INSERT INTO users (username, active, password, admin)
+						VALUES (:username, :active, :password, :admin)");
+					$insert->execute(array('username' => $u['username'], 'active' => $u['active'], 'password' => $u['password'], 'admin' => $u['admin']));
 				}
 
 
