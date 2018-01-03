@@ -47,6 +47,9 @@
         $_SESSION['message_deleted'] = true;
       }
 
+      // Close file db connection
+      $db = null;
+
       header("location: index.php");
     }
   }
