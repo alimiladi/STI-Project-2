@@ -71,37 +71,47 @@
 			try{
 				// Create (connect to) SQLite database in file
 				$dbconn = new PDO('sqlite:/var/www/databases/database.sqlite');
+				// Disabling emulated prepared statements
+				$dbconn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 				// Set errormode to exceptions
 				$dbconn->setAttribute(PDO::ATTR_ERRMODE,
 						    PDO::ERRMODE_EXCEPTION);
-				//Checking whether fields are correctly set by user
+
+				// Checking whether fields are correctly set by user
 				if(isset($_POST['Username']) && isset($_POST['Password'])){
 
-				//Password crypting with hash() function
-				$_POST['Password']= hash('sha256', $_POST['Password']);
+				// Password crypting with hash() function
+				$password = hash('sha256', $_POST['Password']);
 
-				//Checking for checkboxes validity
+				$username = $_POST['Username'];
+
+				// Checking for checkboxes validity with prepared statements to protect us against SQL injections
 					if(isset($_POST['active'])){
 						if(isset($_POST['admin'])){
-							$dbconn->exec("INSERT INTO users (username, active, password, admin)
-							VALUES ('{$_POST['Username']}', '1', '{$_POST['Password']}', '1')");
+							$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
+							VALUES (:username, '1', :password, '1')");
+							$insert->execute(array('username' => $username, 'password' => $password));
 						}
 						else{
-							$dbconn->exec("INSERT INTO users (username, active, password, admin)
-							VALUES ('{$_POST['Username']}', '1', '{$_POST['Password']}', '0')");
+							$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
+							VALUES (:username, '1', :password, '0')");
+							$insert->execute(array('username' => $username, 'password' => $password));
 						}
 					}
 					else{
 						if(isset($_POST['admin'])){
-								$dbconn->exec("INSERT INTO users (username, active, password, admin)
-								VALUES ('{$_POST['Username']}', '0', '{$_POST['Password']}', '1')");
+								$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
+								VALUES (:username, '0', :password, '1')");
+								$insert->execute(array('username' => $username, 'password' => $password));
 							}
 							else{
-								$dbconn->exec("INSERT INTO users (username, active, password, admin)
-								VALUES ('{$_POST['Username']}', '0', '{$_POST['Password']}', '0')");
+								$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
+								VALUES (:username, '0', :password, '0')");
+								$insert->execute(array('username' => $username, 'password' => $password));
 							}
 					}
 				}
+
 				// Close file db connection
 	    			$dbconn = null;
 			}
