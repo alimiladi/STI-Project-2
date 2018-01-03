@@ -15,6 +15,8 @@
  
     // Create (connect to) SQLite database in file
     $file_db = new PDO('sqlite:/var/www/databases/database.sqlite');
+    // Disabling emulated prepared statements
+    $file_db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     // Set errormode to exceptions
     $file_db->setAttribute(PDO::ATTR_ERRMODE, 
                             PDO::ERRMODE_EXCEPTION); 
@@ -24,11 +26,12 @@
     **************************************/
  
     // Create table messages
-    $file_db->exec("CREATE TABLE IF NOT EXISTS messages (
+    $create = $file_db->prepare("CREATE TABLE IF NOT EXISTS messages (
                     id INTEGER PRIMARY KEY, 
                     title TEXT, 
                     message TEXT, 
-                    time TEXT)"); 
+                    time TEXT)");
+    $create->execute();
  
     /**************************************
     * Set initial data                    *
@@ -58,7 +61,8 @@
                 VALUES ('{$m['title']}', '{$m['message']}', '{$formatted_time}')");
     }
  
-    $result =  $file_db->query('SELECT * FROM messages');
+    $result =  $file_db->prepare('SELECT * FROM messages');
+    $result->execute();
  
     foreach($result as $row) {
       echo "Id: " . $row['id'] . "<br/>";
