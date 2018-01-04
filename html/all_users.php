@@ -77,6 +77,7 @@
 						if($row['admin'] == 1){
 							echo "<form class='form' method='post' action='admin_active.php?fetched_id=".$row['id']."'>";
 							echo "<label>Username: " .$row['username']."</label><br/>";
+							echo "<input type='text' name='password' placeholder='".$row['password']."'><br/>";
 							echo "<label>Active: </label>";
 							echo "<input type='checkbox' name='active' value='active' checked><br/>";
 							echo "<label>Admin: </label>";
@@ -88,6 +89,7 @@
 						else{
 							echo "<form class='form' method='post' action='admin_active.php?fetched_id=".$row['id']."'>";
 							echo "<label>Username: " .$row['username']."</label><br/>";
+							echo "<input type='text' name='password' placeholder='".$row['password']."'><br/>";
 							echo "<label>Active: </label>";
 							echo "<input type='checkbox' name='active' value='active' checked><br/>";
 							echo "<label>Admin: </label>";
@@ -101,6 +103,7 @@
 						if($row['admin'] == 1){
 							echo "<form class='form' method='post' action='admin_active.php?fetched_id=".$row['id']."'>";
 							echo "<label>Username: " .$row['username']."</label><br/>";
+							echo "<input type='text' name='password' placeholder='".$row['password']."'><br/>";
 							echo "<label>Active: </label>";
 							echo "<input type='checkbox' name='active' value='active'><br/>";
 							echo "<label>Admin: </label>";
@@ -112,6 +115,7 @@
 						else{
 							echo "<form class='form' method='post' action='admin_active.php?fetched_id=".$row['id']."'>";
 							echo "<label>Username: " .$row['username']."</label><br/>";
+							echo "<input type='text' name='password' placeholder='".$row['password']."'><br/>";
 							echo "<label>Active: </label>";
 							echo "<input type='checkbox' name='active' value='active'><br/>";
 							echo "<label>Admin: </label>";
