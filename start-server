@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Staring the docker php container
+echo "******************* starting the server *******************"
+docker run --name $1 -d -p 80:80 -v /c/Users/ali.miladi/Documents/home/ali/HEIG-VD/3eme/STI/repos/STI-Project-2/html/:/var/www/html/ sti/phpwebserver
