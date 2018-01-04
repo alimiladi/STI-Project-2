@@ -43,7 +43,8 @@
   <body>
     <div class="login-page">
   <div class="form">
-      <form class="login-form" action="process_login.php" method="post" role="form">
+    <!--htmlspecialchars filters out special characters sent in a php form in order to prevent from script injection-->
+      <form class="login-form" action="<?php echo htmlspecialchars('process_login.php');?>" method="post" role="form">
       <input type="text" placeholder="username" name="username" id="username" required/>
       <input type="password" placeholder="password" name="password" id="password" required/>
       <input type="submit" name="login-submit" id="login-submit" value="log in">
