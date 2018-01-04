@@ -41,29 +41,37 @@
 
       // Create (connect to) SQLite database in file
       $db = new PDO('sqlite:/var/www/databases/database.sqlite');
-
+      // Disabling emulated prepared statements
+      $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
       // Set errormode to exceptions
       $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-      // Get info about the message
-      $result = $db->query("SELECT * FROM messages WHERE id = '$message_id'");
+      // Get info about the message with protection against SQL injections
+      $result = $db->prepare("SELECT * FROM messages WHERE id = :message_id");
+      $result->execute(array('message_id' => $message_id));
       $message = $result->fetch();
 
       // Get id of current user
-      $result = $db->query("SELECT id FROM users WHERE username = '$username'");
+      $result = $db->prepare("SELECT id FROM users WHERE username = :username");
+      $result->execute(array('username' => $username));
       $current_user = $result->fetch();
       $id_current_user = $current_user['id'];
 
       // Check if the user who want to see the message is the recipient
-      $result = $db->query("SELECT COUNT(*) as count FROM messages WHERE id = '$message_id' AND receiver_id = '$id_current_user'");
+      $result = $db->prepare("SELECT COUNT(*) as count FROM messages WHERE id = :message_id AND receiver_id = :id_current_user");
+      $result->execute(array('message_id' => $message_id, 'id_current_user' => $id_current_user));
       $count = $result->fetchColumn();
 
       if($count == 1)
       {
         //retrieve sender identity
         $id_sender = $message['sender_id'];
-        $result_sender = $db->query("SELECT username FROM users WHERE id = '$id_sender'");
+        $result_sender = $db->prepare("SELECT username FROM users WHERE id = :id_sender");
+	$result_sender->execute(array('id_sender' => $id_sender));
         $sender = $result_sender->fetch();
+
+	// Close file db connection
+	$db = null;
 
         echo '<div class="container" align="center">';
         echo 'From : </br>'.$sender['username'];
@@ -86,7 +94,10 @@
       }
       else
       {
-        header("location: index.php");
+        // Close file db connection
+	$db = null;
+	
+	header("location: index.php");
       }
     }
   }

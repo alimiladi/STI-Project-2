@@ -22,26 +22,33 @@
 
       // Create (connect to) SQLite database in file
       $db = new PDO('sqlite:/var/www/databases/database.sqlite');
-
+      // Disabling emulated prepared statements
+      $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
       // Set errormode to exceptions
       $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-      // Get id of current user
-      $result = $db->query("SELECT id FROM users WHERE username = '$username'");
+      // Get id of current user with protection against SQL injection
+      $result = $db->prepare("SELECT id FROM users WHERE username = :username");
+      $result->execute(array('username' => $username));
       $current_user = $result->fetch();
       $id_current_user = $current_user['id'];
 
       // Check if the user who want to delete the message is the recipient
-      $result = $db->query("SELECT COUNT(*) as count FROM messages WHERE id = '$message_id' AND receiver_id = '$id_current_user'");
+      $result = $db->prepare("SELECT COUNT(*) as count FROM messages WHERE id = :message_id AND receiver_id = :id_current_user");
+      $result->execute(array('message_id' => $message_id, 'id_current_user' => $id_current_user));
       $count = $result->fetchColumn();
 
       if($count == 1)
       {
         // Delete the message
-        $result = $db->query("DELETE FROM messages WHERE id = '$message_id'");
+        $result = $db->prepare("DELETE FROM messages WHERE id = :message_id");
+	$result->execute(array('message_id' => $message_id));
 
         $_SESSION['message_deleted'] = true;
       }
+
+      // Close file db connection
+      $db = null;
 
       header("location: index.php");
     }

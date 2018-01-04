@@ -43,45 +43,56 @@
 
     // Create (connect to) SQLite database in file
     $db = new PDO('sqlite:/var/www/databases/database.sqlite');
-
+    // Disabling emulated prepared statements
+    $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     // Set errormode to exceptions
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    //get user id
-    $result = $db->query("SELECT id FROM users WHERE username = '$username';");
+    //get user id with a prepared statement protecting against SQL injections
+    $result = $db->prepare("SELECT id FROM users WHERE username = :username");
+    $result->execute(array('username' => $username));
+
     $user = $result->fetch();
     $id_user = $user['id'];
 
-    // retrieve the received messages
-    $result = $db->query("SELECT * FROM messages WHERE receiver_id = '$id_user' ORDER BY time");
+    // retrieve the received messages with a prepared statement protecting against SQL injections
+    $result = $db->prepare("SELECT * FROM messages WHERE receiver_id = :id_user ORDER BY time");
+    $result->execute(array('id_user' => $id_user));
 
     while($message = $result->fetch())
     {
-    //retrieve sender identity
-    $id_sender = $message['sender_id'];
-    $result_sender = $db->query("SELECT username FROM users WHERE id = '$id_sender'");
-    $sender = $result_sender->fetch();
+	    //retrieve sender identity
+	    $id_sender = $message['sender_id'];
+	    $result_sender = $db->prepare("SELECT username FROM users WHERE id = :id_sender");
+	    $result_sender->execute(array('id_sender' => $id_sender));
 
-    // display messages in the table
-    echo '<table cellpadding="10px" cellspacing="40px">
-      <tr>
-        <td>' . $sender['username'] . '</td>
-        <td>' . $message['title'] . '</td>
-        <td>' . $message['time'] . '</td>
-      <td>
-        <button class="btn btn-primary" onclick="answer_mails(&quot;'. $sender['username'] . '&quot;,&quot;' . $message['title'] . '&quot;)">Answer</button>
-      </td>
-      <td>
-        <a class ="btn-default" href="detail_mails.php?message_id='. $message['id'] . '">Details</a>
-      </td>
-      <td>
-        <a class = "btn-default" href="delete_mails.php?message_id='. $message['id'] . '">Delete</a> <br/>
-      </td>
-      </tr>
-      </tr></table>
-    <tr>
-        ';
+	    $sender = $result_sender->fetch();
+
+	    
+
+	    // display messages in the table
+	    echo '<table cellpadding="10px" cellspacing="40px">
+	      <tr>
+		<td>' . $sender['username'] . '</td>
+		<td>' . $message['title'] . '</td>
+		<td>' . $message['time'] . '</td>
+	      <td>
+		<button class="btn btn-primary" onclick="answer_mails(&quot;'. $sender['username'] . '&quot;,&quot;' . $message['title'] . '&quot;)">Answer</button>
+	      </td>
+	      <td>
+		<a class ="btn-default" href="detail_mails.php?message_id='. $message['id'] . '">Details</a>
+	      </td>
+	      <td>
+		<a class = "btn-default" href="delete_mails.php?message_id='. $message['id'] . '">Delete</a> <br/>
+	      </td>
+	      </tr>
+	      </tr></table>
+	    <tr>
+		';
     }
+
+    // Close file db connection
+    $db = null;
 
     ?>
     <button onclick="history.go(-1);" class="back-btn">Back</button>

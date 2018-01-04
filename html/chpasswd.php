@@ -61,15 +61,19 @@
 			try{
 				// Create (connect to) SQLite database in file
 				$dbconn = new PDO('sqlite:/var/www/databases/database.sqlite');
+				// Disabling emulated prepared statements
+				$dbconn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 				// Set errormode to exceptions
 				$dbconn->setAttribute(PDO::ATTR_ERRMODE,
 						    PDO::ERRMODE_EXCEPTION);
 				//Checking whether fields are correctly set by user
 				if(isset($_POST['Password'])){
 					// Crypting the password with the hash() function
-					$_POST['Password']= hash('sha256', $_POST['Password']);				
+					$password = hash('sha256', $_POST['Password']);		
 					
-					$dbconn->exec("UPDATE users SET password = '{$_POST['Password']}' WHERE username = '$username';");
+					// Protecting against SQL injections with a prepared statement
+					$update = $dbconn->prepare("UPDATE users SET password = :password WHERE username = :username");
+					$update->execute(array('password' => $password, 'username' => $username));
 				}
 				// Close file db connection
 	    			$dbconn = null;

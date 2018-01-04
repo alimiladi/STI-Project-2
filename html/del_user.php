@@ -31,13 +31,21 @@
 			}
 
 			try{
+				// We get the id of the user we want to delete				
+				$id = $_GET['id'];
+
 				// Create (connect to) SQLite database in file
 				$dbconn = new PDO('sqlite:/var/www/databases/database.sqlite');
+				// Disabling emulated prepared statements
+				$dbconn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 				// Set errormode to exceptions
 				$dbconn->setAttribute(PDO::ATTR_ERRMODE,
 						    PDO::ERRMODE_EXCEPTION);
-				// Delete the row having username stored in the variable $username (stored in the session variable $_SESSION)
-				$dbconn->exec("DELETE FROM users WHERE id = '".$_GET['id']."';");
+
+				// Deleting the row having the id of the user
+				// and using prepared statement against SQL injections
+				$delete = $dbconn->prepare("DELETE FROM users WHERE id = :id");
+				$delete->execute(array('id' => $id));
 
 				// Close file db connection
 				$dbconn = null;

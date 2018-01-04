@@ -41,15 +41,21 @@
              <?php
                       // Create (connect to) SQLite database in file
                       $db = new PDO('sqlite:/var/www/databases/database.sqlite');
-
+		      // Disabling emulated prepared statements
+		      $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
                       // Set errormode to exceptions
                       $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            $result = $db->query("SELECT * FROM users WHERE NOT username = '$username'");
+            // We get all users except us (we don't want to send a mail to ourselves)
+	    // We use a prepared statement to protect us against SQL injections
+	    $result = $db->prepare("SELECT * FROM users WHERE NOT username = :username");
+	    $result->execute(array('username' => $username));
               while($row = $result->fetch())
              {
                 echo '<option>'. $row['username'] .'</option>';
              }
+
+	    // Close file db connection
             $db = null;
              ?>
 

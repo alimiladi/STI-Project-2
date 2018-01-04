@@ -27,35 +27,45 @@
 	<head></head>
 	<body>
 		<?php
-			try{
+			try{	
+				// We get the id of the user we want to modify				
+				$id = $_GET['fetched_id'];				
+							
 				// Create (connect to) SQLite database in file
 				$dbconn = new PDO('sqlite:/var/www/databases/database.sqlite');
+				// Disabling emulated prepared statements
+				$dbconn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 				// Set errormode to exceptions
 				$dbconn->setAttribute(PDO::ATTR_ERRMODE,
 						    PDO::ERRMODE_EXCEPTION);
 
-				//Checking for checkboxes validity
+				//Checking for checkboxes validity with protection against SQL injections
 				if(isset($_POST['active'])){
 					if(isset($_POST['admin'])){
-						$dbconn->exec("UPDATE users SET active = '1', admin='1' WHERE id = '".$_GET['fetched_id']."';");
+						$update = $dbconn->prepare("UPDATE users SET active = '1', admin='1' WHERE id = :id");
+						$update->execute(array('id' => $id));
 					}
 					else{
-						$dbconn->exec("UPDATE users SET active = '1', admin='0' WHERE id = '".$_GET['fetched_id']."';");
+						$update = $dbconn->prepare("UPDATE users SET active = '1', admin='0' WHERE id = :id");
+						$update->execute(array('id' => $id));
 					}
 				}
 				else{
 					if(isset($_POST['admin'])){
-						$dbconn->exec("UPDATE users SET active = '0', admin='1' WHERE id = '".$_GET['fetched_id']."';");
+						$update = $dbconn->prepare("UPDATE users SET active = '0', admin='1' WHERE id = :id");
+						$update->execute(array('id' => $id));
 					}
 					else{
-						$dbconn->exec("UPDATE users SET active = '0', admin='0' WHERE id = '".$_GET['fetched_id']."';");
+						$update = $dbconn->prepare("UPDATE users SET active = '0', admin='0' WHERE id = :id");
+						$update->execute(array('id' => $id));
 					}
 				}
-				// Redirect to originating page
-				header("location: all_users.php");
 
 				// Close file db connection
 	    			$dbconn = null;
+
+				// Redirect to originating page
+				header("location: all_users.php");		
 			}
 			catch(PDOException $e) {
 				// Print PDOException message

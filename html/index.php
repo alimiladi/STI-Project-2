@@ -13,16 +13,27 @@
 	else
 	{
 		try{
+			$username = $_POST['username'];			
+
+
 			// Create (connect to) SQLite database in file
 			$dbconn = new PDO('sqlite:/var/www/databases/database.sqlite');
+			// Disabling emulated prepared statements
+			$dbconn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 			// Set errormode to exceptions
 			$dbconn->setAttribute(PDO::ATTR_ERRMODE,
 			PDO::ERRMODE_EXCEPTION);
 
-			$result = $dbconn->query("SELECT COUNT(*) as count FROM users WHERE username = '$username' AND admin = 1");
-			$count = $result->fetchColumn();
+			// Protecting prepared statement against SQL injections
+			$result = $dbconn->prepare("SELECT * FROM users WHERE username = :username");
+			$result->execute(array('username' => $username));
 
-			if($count == 1)
+			// We get the values of each row of the users table in the DB
+			foreach($result as $row) {
+				$adminStored = $row['admin'];
+			}
+
+			if($adminStored == 1)
 			{
 			  $_SESSION['admin'] = true;
 			  header("location: admin_home.php");

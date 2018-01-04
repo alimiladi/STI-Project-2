@@ -24,21 +24,24 @@
 
 	try {
 		// Get the posted data from the formular in the variable $_POST.
-		if(!empty($_POST["username"]) && !empty($_POST["password"])){
+		if(!empty($_POST['username']) && !empty($_POST['password'])){
 
 			// Store in two local variables.
-			$username = $_POST["username"];
-			$password = $_POST["password"];
+			$username = $_POST['username'];
+			$password = $_POST['password'];
 
 
 			// Create (connect to) SQLite database in file
-			$db = new PDO('sqlite:/var/www/databases/database.sqlite');
-
+			$dbconn = new PDO('sqlite:/var/www/databases/database.sqlite');
+			// Disabling emulated prepared statements
+			$dbconn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 			// Set errormode to exceptions
-			$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$dbconn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-			// We get the user's data stored in the DB
-			$result =  $db->query("SELECT * FROM users WHERE username = '$username'");
+			// We get the user's data stored in the DB and
+			// we protect prepared statement against SQL injections
+			$result = $dbconn->prepare("SELECT * FROM users WHERE username = :username");
+			$result->execute(array('username' => $username));
 			    
 			// We get the values of each row of the users table in the DB
 			foreach($result as $row) {      
@@ -46,6 +49,9 @@
 				$activeStored = $row['active'];
 				$adminStored = $row['admin'];
 			}
+
+			// Close file db connection
+			$dbconn = null;
 			
 			// If hashes correspond we can go further
 			if(hash('sha256', $password) == $hashStored && $activeStored == 1) {
@@ -54,9 +60,6 @@
 				// Case where the credentials are correct and the user is active.
 				$_SESSION['login_user'] = $username;
 
-				// Find out whether he is admin.
-				$result = $db->query("SELECT COUNT(*) as count FROM users WHERE username = '$username' AND admin= 1");
-				$count = $result->fetchColumn();
 
 
 /**********************************************************************************************************************************************/
@@ -64,7 +67,7 @@
 /**********************************************************************************************************************************************/
 
 				// Redirect consequently.
-				if($count == 1){
+				if($adminStored == 1){
 					$_SESSION['admin'] = true;
 					header("location: admin_home.php");
 				}

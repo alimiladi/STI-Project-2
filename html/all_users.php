@@ -62,12 +62,15 @@
 			try{
 				// Create (connect to) SQLite database in file
 				$dbconn = new PDO('sqlite:/var/www/databases/database.sqlite');
+				// Disabling emulated prepared statements
+				$dbconn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 				// Set errormode to exceptions
 				$dbconn->setAttribute(PDO::ATTR_ERRMODE,
 				PDO::ERRMODE_EXCEPTION);
 
-				// fetch all the users from the database.
-				$users = $dbconn->query("SELECT * FROM users");
+				// Fetching all the users from the database (with protection against SQL injection)
+				$users = $dbconn->prepare("SELECT * FROM users");
+				$users->execute();
 
 				// This section aims to display a different form for each registered user in the DB.
 				// This is done by iterating over the users and check the content of the 'admin' and 'active' flags.
