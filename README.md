@@ -15,6 +15,7 @@ A second phase of the first STI project aiming to add  more security features to
 docker build --rm -t sti/securephpserver .
 docker run -d --rm --name securephpserver -p 80:80 -v <path to the html folder on your local machine>:/var/www/html/ sti/securephpserver
 ```	
+	You can run ```./start-server <servername>``` instead of typing the second line above.
 -	Open your favorite browser and type the url `<your docker machine ip>:80/`.
 	Where `<your docker machine ip>` is the ip address of your docker engine. This could be `localhost` if you're using `docker` natively for `linux`, `windows` or `mac` or `192.168.99.100` if you're using `Docker-Toolbox`. 
 
