@@ -30,14 +30,14 @@
   }
   else
   {
-    $username = $_SESSION['login_user'];
+    $username = filter_var($_SESSION['login_user'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
   }
 
   try {
 
     if(!empty($_GET['message_id']))
     {
-      $message_id = $_GET['message_id'];
+      $message_id = filter_var($_GET['message_id'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
 
       // Create (connect to) SQLite database in file
       $db = new PDO('sqlite:/var/www/databases/database.sqlite');
@@ -74,19 +74,19 @@
 	$db = null;
 
         echo '<div class="container" align="center">';
-        echo 'From : </br>'.$sender['username'];
+        echo 'From : </br>'.filter_var($sender['username'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
         echo '</div>';
 
         echo '<div class="container" align="center">';
-        echo 'Subject : </br>' .$message['title'];
+        echo 'Subject : </br>' .filter_var($message['title'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
         echo '</div>';
 
         echo '<div class="container" align="center">';
-	      echo 'At :</br>'. $message['time'];
+	      echo 'At :</br>'. filter_var($message['time'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
         echo '</div>';
 
         echo '<div class="container" align="center">';
-        echo 'Message : </br>' .$message['message'];
+        echo 'Message : </br>' .filter_var($message['message'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
         echo '</div>';
 	        echo '
         <button onclick="answer_mails(&quot;'. $sender['username'] . '&quot;,&quot;' . $message['title'] . '&quot;)" id="right">Answer</button>
@@ -107,7 +107,13 @@
   }
 
 ?>
-<button onclick="history.go(-1);" class="back-btn">Back</button>
-
+<?php
+  if (isset($_SESSION['admin'])) {
+    echo "<button onclick='document.location.href=\"admin_home.php\";' class='back-btn'>Back</button>";
+  }
+  else {
+    echo "<button onclick='document.location.href=\"user_home.php\";' class='back-btn'>Back</button>";
+  } 
+?>
 </body>
 </html>

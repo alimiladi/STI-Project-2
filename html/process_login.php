@@ -27,8 +27,8 @@
 		if(!empty($_POST['username']) && !empty($_POST['password'])){
 
 			// Store in two local variables.
-			$username = $_POST['username'];
-			$password = $_POST['password'];
+			$username = filter_var($_POST['username'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
+			$password = filter_var($_POST['password'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
 
 
 			// Create (connect to) SQLite database in file

@@ -19,7 +19,7 @@
 	else{
 	// In the case that he isn't an admin user, show a popup error and go back to the privious page.
 		if (isset($_SESSION['admin'])){
-			$username = $_SESSION['login_user'];
+			$username = filter_var($_SESSION['login_user'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
 		}
 	else{
 			echo "<script type='text/javascript'>alert('Unauthorized');history.go(-1);</script>";
@@ -52,6 +52,13 @@
 				<a href="all_users.php" id="view-msg-a">Show registered users</a>
 		</div>
 	</div>
-		<button onclick="history.go(-1);" class="back-btn">Back</button>
+	<?php
+        if (isset($_SESSION['admin'])) {
+          echo "<button onclick='document.location.href=\"admin_home.php\";' class='back-btn'>Back</button>";
+        }
+        else {
+          echo "<button onclick='document.location.href=\"user_home.php\";' class='back-btn'>Back</button>";
+        } 
+    ?>
 	</body>
 </html>

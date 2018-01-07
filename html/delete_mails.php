@@ -8,17 +8,15 @@
   }
   else
   {
-    $username = $_SESSION['login_user'];
+    $username = filter_var($_SESSION['login_user'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
   }
 
   try {
 
-    echo $_GET['message_id'];
-
     if(!empty($_GET['message_id']))
     {
 
-      $message_id = $_GET['message_id'];
+      $message_id = filter_var($_GET['message_id'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
 
       // Create (connect to) SQLite database in file
       $db = new PDO('sqlite:/var/www/databases/database.sqlite');

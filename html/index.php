@@ -13,8 +13,7 @@
 	else
 	{
 		try{
-			$username = $_POST['username'];			
-
+			$username = filter_var($_POST['username'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);	
 
 			// Create (connect to) SQLite database in file
 			$dbconn = new PDO('sqlite:/var/www/databases/database.sqlite');
@@ -51,7 +50,7 @@
 			echo $e->getMessage();
 		}
 
-		$username = $_SESSION['login_user'];
+		$username = filter_var($_SESSION['login_user'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
 		header("location: login.php");
 	}
 ?>

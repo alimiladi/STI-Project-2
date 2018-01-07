@@ -16,7 +16,7 @@
 		header("location: login.php");
 	}
 	else{
-		$username = $_SESSION['login_user'];
+		$username = filter_var($_SESSION['login_user'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
 	}
 ?>
 <!DOCTYPE html>
@@ -25,19 +25,16 @@
 		<meta charset="utf-8">
 		<link rel="stylesheet" type="text/css" href="style.css">
 		<title>Change password</title>
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-		<script type="text/javascript">
-			$(document).ready(function(){
-			    $(".submit").click(function(){
-						if ($("#chpass-form").data("changed")) {
-							alert("Password changed successfully");
-						}
-			    });
-					$("#chpass-form :input").change(function() {
-   					$("#chpass-form").data("changed",true);
-					});
-			});
-		</script>
+		<script>
+        function validate(){
+            var p = document.getElementById("Password").value;
+            var pc = document.getElementById("PasswordConfirm").value;
+            if (p!=pc) {
+               alert("Passwords do no match !");
+               return false;
+            }
+        }
+     </script>
 	</head>
 	<body>
 		<header>
@@ -51,9 +48,9 @@
 		</div>
 	</header>
 	<div class="center" align="center">
-		<form action="chpasswd.php" method="post" id="chpass-form">
-			<label>New password :</label>
+		<form onSubmit="return validate();" action="<?php echo htmlspecialchars('chpasswd.php');?>" method="post" id="chpass-form">
 			<input type="password" name="Password" class="Password" id="Password" placeholder="Type your new password here" required> <br>
+			<input type="password" name="PasswordConfirm" class="Password" id="PasswordConfirm" placeholder="Confirm password" required> <br>
 			<input type="submit" name="submit" value="submit" class="submit">
 		</form>
 	</div>
@@ -68,12 +65,40 @@
 						    PDO::ERRMODE_EXCEPTION);
 				//Checking whether fields are correctly set by user
 				if(isset($_POST['Password'])){
-					// Crypting the password with the hash() function
-					$password = hash('sha256', $_POST['Password']);		
-					
-					// Protecting against SQL injections with a prepared statement
-					$update = $dbconn->prepare("UPDATE users SET password = :password WHERE username = :username");
-					$update->execute(array('password' => $password, 'username' => $username));
+					if (!empty($_POST['Password'])) {
+						if ($_POST['Password'] == $_POST['PasswordConfirm']) {
+
+							// Forcing a strong password policy
+							$uppercase = preg_match('/[A-Z]/', $_POST['Password']);
+							$lowercase = preg_match('/[a-z]/', $_POST['Password']);
+							$number    = preg_match('/[0-9]/', $_POST['Password']);
+							$regexp = '#^.*(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^0-9a-zA-Z]).*$#';
+
+							if($uppercase == 1 && $lowercase == 1 && $number == 1 && strlen($_POST['Password']) > 8) {
+								// Crypting the password with the hash() function
+								$password = hash('sha256', filter_var($_POST['Password'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS));		
+								
+								// Protecting against SQL injections with a prepared statement
+								$update = $dbconn->prepare("UPDATE users SET password = :password WHERE username = :username");
+								$update->execute(array('password' => $password, 'username' => $username));
+								
+								echo "<script>alert('Password changed successfully !');</script>";
+								
+								if (isset($_SESSION['admin'])) {
+									echo "<script>location='admin_home.php';</script>";
+								}
+								else {
+									echo "<script>location='user_home.php.php';</script>";
+								}
+							}
+							else {
+								echo "<script>alert(\"Your password must contain at least:\\n- 1 upper case letter\\n- 1 lower case letter\\n- 1 number\\n- 8 charcters length!\");</script>";
+							}
+						}
+					}
+					else{
+						echo "<script type='text/javascript'>alert('Forbidden \\nEmpty password!');</script>";
+					}
 				}
 				// Close file db connection
 	    			$dbconn = null;
@@ -83,6 +108,13 @@
 				echo $e->getMessage();
 			}
 		?>
-		<button onclick="history.go(-1);" class="back-btn">Back</button>
+		<?php
+            if (isset($_SESSION['admin'])) {
+              echo "<button onclick='document.location.href=\"admin_home.php\";' class='back-btn'>Back</button>";
+            }
+            else {
+              echo "<button onclick='document.location.href=\"user_home.php\";' class='back-btn'>Back</button>";
+            } 
+        ?>
 	</body>
 </html>

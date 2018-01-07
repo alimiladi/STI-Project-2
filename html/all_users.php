@@ -23,7 +23,7 @@
 	else{
 	// In the case that he isn't an admin user, show a popup error and go back to the previous page.
 		if (isset($_SESSION['admin'])){
-			$username = $_SESSION['login_user'];
+			$username = filter_var($_SESSION['login_user'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
 		}
 	else{
 			echo "<script type='text/javascript'>alert('Unauthorized');history.go(-1);</script>";
@@ -78,54 +78,54 @@
 					echo "<div class='all-users'>";
 					if($row['active'] == 1){
 						if($row['admin'] == 1){
-							echo "<form class='form' method='post' action='admin_active.php?fetched_id=".$row['id']."'>";
-							echo "<label>Username: " .$row['username']."</label><br/>";
-							echo "<input type='text' name='password' placeholder='".$row['password']."'><br/>";
+							echo "<form class='form' method='post' action='admin_active.php?fetched_id=".filter_var($row['id'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."'>";
+							echo "<label>Username: " .filter_var($row['username'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."</label><br/>";
+							echo "<input type='password' id='Password' name='password' placeholder='".filter_var($row['password'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."'><br/>";
 							echo "<label>Active: </label>";
 							echo "<input type='checkbox' name='active' value='active' checked><br/>";
 							echo "<label>Admin: </label>";
 							echo "<input type='checkbox' name='admin' value='admin' checked><br/>";
-							echo "<input type='submit' name='".$row['id']."' value='save' class='submit'>";
+							echo "<input type='submit' name='".filter_var($row['id'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."' value='save' class='submit'>";
 							echo "</form>";
-							echo "<button name='delete' onclick=\"self.location.href='del_user.php?id=".$row['id']."'\" class=\"logout\">delete</button>";
+							echo "<button name='delete' onclick=\"self.location.href='del_user.php?id=".filter_var($row['id'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."'\" class=\"logout\">delete</button>";
 						}
 						else{
-							echo "<form class='form' method='post' action='admin_active.php?fetched_id=".$row['id']."'>";
-							echo "<label>Username: " .$row['username']."</label><br/>";
-							echo "<input type='text' name='password' placeholder='".$row['password']."'><br/>";
+							echo "<form class='form' method='post' action='admin_active.php?fetched_id=".filter_var($row['id'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."'>";
+							echo "<label>Username: " .filter_var($row['username'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."</label><br/>";
+							echo "<input type='password' id='Password' name='password' placeholder='".filter_var($row['password'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."'><br/>";
 							echo "<label>Active: </label>";
 							echo "<input type='checkbox' name='active' value='active' checked><br/>";
 							echo "<label>Admin: </label>";
 							echo "<input type='checkbox' name='admin' value='admin'><br/>";
-							echo "<input type='submit' name='".$row['id']."' value='save' class='submit'>";
+							echo "<input type='submit' name='".filter_var($row['id'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."' value='save' class='submit'>";
 							echo "</form>";
-							echo "<button name='delete' onclick=\"self.location.href='del_user.php?id=".$row['id']."'\" class=\"logout\">delete</button>";
+							echo "<button name='delete' onclick=\"self.location.href='del_user.php?id=".filter_var($row['id'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."'\" class=\"logout\">delete</button>";
 						}
 					}
 					else{
 						if($row['admin'] == 1){
-							echo "<form class='form' method='post' action='admin_active.php?fetched_id=".$row['id']."'>";
-							echo "<label>Username: " .$row['username']."</label><br/>";
-							echo "<input type='text' name='password' placeholder='".$row['password']."'><br/>";
+							echo "<form class='form' method='post' action='admin_active.php?fetched_id=".filter_var($row['id'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."'>";
+							echo "<label>Username: " .filter_var($row['username'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."</label><br/>";
+							echo "<input type='password' id='Password' name='password' placeholder='".filter_var($row['password'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."'><br/>";
 							echo "<label>Active: </label>";
 							echo "<input type='checkbox' name='active' value='active'><br/>";
 							echo "<label>Admin: </label>";
 							echo "<input type='checkbox' name='admin' value='admin' checked><br/>";
-							echo "<input type='submit' name='".$row['id']."' value='save' class='submit'>";
+							echo "<input type='submit' name='".filter_var($row['id'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."' value='save' class='submit'>";
 							echo "</form>";
-							echo "<button name='delete' onclick=\"self.location.href='del_user.php?id=".$row['id']."'\" class=\"logout\">delete</button>";
+							echo "<button name='delete' onclick=\"self.location.href='del_user.php?id=".filter_var($row['id'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."'\" class=\"logout\">delete</button>";
 						}
 						else{
-							echo "<form class='form' method='post' action='admin_active.php?fetched_id=".$row['id']."'>";
-							echo "<label>Username: " .$row['username']."</label><br/>";
-							echo "<input type='text' name='password' placeholder='".$row['password']."'><br/>";
+							echo "<form class='form' method='post' action='admin_active.php?fetched_id=".filter_var($row['id'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."'>";
+							echo "<label>Username: " .filter_var($row['username'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."</label><br/>";
+							echo "<input type='password' id='Password' name='password' placeholder='".filter_var($row['password'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."'><br/>";
 							echo "<label>Active: </label>";
 							echo "<input type='checkbox' name='active' value='active'><br/>";
 							echo "<label>Admin: </label>";
 							echo "<input type='checkbox' name='admin' value='admin' ><br/>";
-							echo "<input type='submit' name='".$row['id']."' value='save' class='submit'>";
+							echo "<input type='submit' name='".filter_var($row['id'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."' value='save' class='submit'>";
 							echo "</form>";
-							echo "<button name='delete' onclick=\"self.location.href='del_user.php?id=".$row['id']."'\" class=\"logout\">delete</button>";
+							echo "<button name='delete' onclick=\"self.location.href='del_user.php?id=".filter_var($row['id'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS)."'\" class=\"logout\">delete</button>";
 						}
 					}
 					echo "</div>";
@@ -140,7 +140,13 @@
 			}
 		?>
 
-
-		<button onclick="history.go(-1);">Back</button>
+		<?php
+            if (isset($_SESSION['admin'])) {
+              echo "<button onclick='document.location.href=\"admin_home.php\";' class='back-btn'>Back</button>";
+            }
+            else {
+              echo "<button onclick='document.location.href=\"user_home.php\";' class='back-btn'>Back</button>";
+            } 
+        ?>
 	</body>
 </html>

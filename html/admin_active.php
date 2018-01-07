@@ -29,7 +29,7 @@
 		<?php
 			try{	
 				// We get the id of the user we want to modify				
-				$id = $_GET['fetched_id'];				
+				$id = filter_var($_GET['fetched_id'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);				
 							
 				// Create (connect to) SQLite database in file
 				$dbconn = new PDO('sqlite:/var/www/databases/database.sqlite');
@@ -59,6 +59,17 @@
 						$update = $dbconn->prepare("UPDATE users SET active = '0', admin='0' WHERE id = :id");
 						$update->execute(array('id' => $id));
 					}
+				}
+				if (!empty($_POST['password'])) {
+				// Crypting the password with the hash() function
+						$password = hash('sha256', filter_var($_POST['password'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS));		
+						
+						// Protecting against SQL injections with a prepared statement
+						$update = $dbconn->prepare("UPDATE users SET password = :password WHERE id = :id");
+						$update->execute(array('password' => $password, 'id' => $id));
+				}
+				else {
+					echo "<script>alert('Error ! Empty password !');</script>";
 				}
 
 				// Close file db connection

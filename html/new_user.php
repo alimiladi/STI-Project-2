@@ -16,7 +16,7 @@
 	else{
 	// In the case that he isn't an admin user, show a popup error and go back to the privious page.
 		if (isset($_SESSION['admin'])){
-			$username = $_SESSION['login_user'];
+			$username = filter_var($_SESSION['login_user'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
 		}
 	else{
 			echo "<script type='text/javascript'>alert('Unauthorized');history.go(-1);</script>";
@@ -55,7 +55,7 @@
 		</div>
 	</header>
 
-		<form action="new_user.php" method="post" class="form" id="new-user-form">
+		<form action="<?php echo htmlspecialchars('new_user.php');?>" method="post" class="form" id="new-user-form">
 			<input type="text" name="Username" class="Username" id="usrname" placeholder="username" required> <br>
 			<input type="password" name="Password" class="Password" id="passwd" placeholder="password" required><br>
 			<label>Active</label>
@@ -79,36 +79,40 @@
 
 				// Checking whether fields are correctly set by user
 				if(isset($_POST['Username']) && isset($_POST['Password'])){
+					if (!empty($_POST['Username']) && !empty($_POST['Password'])) {
+						// Password crypting with hash() function
+						$password = hash('sha256', $_POST['Password']);
 
-				// Password crypting with hash() function
-				$password = hash('sha256', $_POST['Password']);
+						$username = filter_var($_POST['Username'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
 
-				$username = $_POST['Username'];
-
-				// Checking for checkboxes validity with prepared statements to protect us against SQL injections
-					if(isset($_POST['active'])){
-						if(isset($_POST['admin'])){
-							$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
-							VALUES (:username, '1', :password, '1')");
-							$insert->execute(array('username' => $username, 'password' => $password));
-						}
-						else{
-							$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
-							VALUES (:username, '1', :password, '0')");
-							$insert->execute(array('username' => $username, 'password' => $password));
-						}
-					}
-					else{
-						if(isset($_POST['admin'])){
+						// Checking for checkboxes validity with prepared statements to protect us against SQL injections
+						if(isset($_POST['active'])) {
+							if(isset($_POST['admin'])) {
 								$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
-								VALUES (:username, '0', :password, '1')");
+								VALUES (:username, '1', :password, '1')");
 								$insert->execute(array('username' => $username, 'password' => $password));
 							}
 							else{
 								$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
-								VALUES (:username, '0', :password, '0')");
+								VALUES (:username, '1', :password, '0')");
 								$insert->execute(array('username' => $username, 'password' => $password));
 							}
+						}
+						else{
+							if(isset($_POST['admin'])) {
+									$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
+									VALUES (:username, '0', :password, '1')");
+									$insert->execute(array('username' => $username, 'password' => $password));
+								}
+								else{
+									$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
+									VALUES (:username, '0', :password, '0')");
+									$insert->execute(array('username' => $username, 'password' => $password));
+								}
+						}
+					}
+					else {
+						echo "<script>alert('Error ! Please fill all the required fields !');</script>";
 					}
 				}
 
@@ -120,6 +124,13 @@
 				echo $e->getMessage();
 			}
 		?>
-		<button onclick="history.go(-1);">Back</button>
+		<?php
+            if (isset($_SESSION['admin'])) {
+              echo "<button onclick='document.location.href=\"admin_home.php\";' class='back-btn'>Back</button>";
+            }
+            else {
+              echo "<button onclick='document.location.href=\"user_home.php\";' class='back-btn'>Back</button>";
+            } 
+        ?>
 	</body>
 </html>

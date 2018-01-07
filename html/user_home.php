@@ -23,7 +23,7 @@
 	// In the case that he is an admin user, this mean that he isn't allowed to access this page.
 	// A popup error message is shown and he gets redirected back to the previous page.
 		if (!isset($_SESSION['admin'])){
-			$username = $_SESSION['login_user'];
+			$username = filter_var($_SESSION['login_user'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
 		}
 		else{
 			echo "<script type='text/javascript'>alert('Unauthorized');history.go(-1);</script>";

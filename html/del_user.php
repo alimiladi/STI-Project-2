@@ -23,7 +23,7 @@
 			else{
 			// In the case that he isn't an admin user, show a popup error and go back to the previous page.
 				if (isset($_SESSION['admin'])){
-					$username = $_SESSION['login_user'];
+					$username = filter_var($_SESSION['login_user'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
 				}
 			else{
 					echo "<script type='text/javascript'>alert('Unauthorized');history.go(-1);</script>";
@@ -32,7 +32,7 @@
 
 			try{
 				// We get the id of the user we want to delete				
-				$id = $_GET['id'];
+				$id = filter_var($_GET['id'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
 
 				// Create (connect to) SQLite database in file
 				$dbconn = new PDO('sqlite:/var/www/databases/database.sqlite');

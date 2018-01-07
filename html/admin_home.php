@@ -19,7 +19,7 @@
 	else{
 	// In the case that he isn't an admin user, show a popup error and go back to the privious page.
 		if (isset($_SESSION['admin'])){
-			$username = $_SESSION['login_user'];
+			$username = filter_var($_SESSION['login_user'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
 		}
 	else{
 			echo "<script type='text/javascript'>alert('Unauthorized');history.go(-1);</script>";

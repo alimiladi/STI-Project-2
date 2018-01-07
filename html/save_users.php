@@ -17,7 +17,7 @@
                       }
                       else
                       {
-                        $username = $_SESSION['login_user'];
+                        $username = filter_var($_SESSION['login_user'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
                       }
 ?>
 	<form method="post" action="example.php">

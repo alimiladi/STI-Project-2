@@ -82,6 +82,7 @@
 	      <td>
 		<a class ="btn-default" href="detail_mails.php?message_id='. $message['id'] . '">Details</a>
 	      </td>
+
 	      <td>
 		<a class = "btn-default" href="delete_mails.php?message_id='. $message['id'] . '">Delete</a> <br/>
 	      </td>
@@ -93,8 +94,13 @@
 
     // Close file db connection
     $db = null;
-
+    if (isset($_SESSION['admin'])) {
+      echo "<button onclick='document.location.href=\"admin_home.php\";' class='back-btn'>Back</button>";
+    }
+    else {
+      echo "<button onclick='document.location.href=\"user_home.php\";' class='back-btn'>Back</button>";
+    }
     ?>
-    <button onclick="history.go(-1);" class="back-btn">Back</button>
+    
   </body>
 </html>

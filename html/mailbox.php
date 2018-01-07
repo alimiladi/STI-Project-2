@@ -19,7 +19,7 @@
                       }
                       else
                       {
-                        $username = $_SESSION['login_user'];
+                        $username = filter_var($_SESSION['login_user'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
                       }
 
 ?>
@@ -33,7 +33,7 @@
   </div>
 </div>
 </header>
-          <form id="message_form" action="send_message.php" method="post" role="form">
+          <form id="message_form" action="<?php echo htmlspecialchars('send_message.php');?>" method="post" role="form">
             <div class="form-group">
              <label for="sel1">Recipient</label>
              <select class="form-control" name="recipient">
@@ -73,7 +73,14 @@
              </div>
            </div>
           </form>
-          <button onclick="history.go(-1);" class="back-btn">Back</button>
+          <?php
+            if (isset($_SESSION['admin'])) {
+              echo "<button onclick='document.location.href=\"admin_home.php\";' class='back-btn'>Back</button>";
+            }
+            else {
+              echo "<button onclick='document.location.href=\"user_home.php\";' class='back-btn'>Back</button>";
+            } 
+           ?>
     </div>
   </div>
 
