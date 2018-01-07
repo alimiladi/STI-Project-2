@@ -14,6 +14,6 @@
 * Mode d'emploi à modifier si nécessaire ==> *AF (En commun)*
 * Rajouter les contrôles au niveau du serveur pour les attributs `required` + vérifier si coté client tout est OK ==> *OK (Ali)*
 * Filtrer les XSS stockés ==> *OK (Ali)*
-* Forcer une politique de mots de passe forts == *OK (Ali)*
-* Interdire la consultation des messages dont les ID ne sont pas autorisés *AF (Ali)*
-* Rajouter une vérification du mot de passe lors du changement *OK (Ali)*
+* Forcer une politique de mots de passe forts ==> *OK (Ali)*
+* Interdire la consultation des messages dont les ID ne sont pas autorisés ==> *AF (Ali)*
+* Rajouter une vérification du mot de passe lors du changement ==> *OK (Ali)*
