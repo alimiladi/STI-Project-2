@@ -80,7 +80,7 @@
 							'message' => 'Just testing...',
 							'time' => 1327301464,
 							'sender_id' => 1,
-							'receiver_id' => 0
+							'receiver_id' => 2
 						),
 						array('title' => 'Hello again!',
 							'message' => 'More testing...',

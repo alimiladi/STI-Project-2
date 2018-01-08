@@ -67,7 +67,7 @@
         //retrieve sender identity
         $id_sender = $message['sender_id'];
         $result_sender = $db->prepare("SELECT username FROM users WHERE id = :id_sender");
-	$result_sender->execute(array('id_sender' => $id_sender));
+	      $result_sender->execute(array('id_sender' => $id_sender));
         $sender = $result_sender->fetch();
 
 	// Close file db connection
@@ -95,9 +95,8 @@
       else
       {
         // Close file db connection
-	$db = null;
-	
-	header("location: index.php");
+	      $db = null;
+	     echo "<script>alert('Unauthorized !');location='list_received_mails.php';</script>";
       }
     }
   }
