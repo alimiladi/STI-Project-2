@@ -15,5 +15,5 @@
 * Rajouter les contrôles au niveau du serveur pour les attributs `required` + vérifier si coté client tout est OK ==> *OK (Ali)*
 * Filtrer les XSS stockés ==> *OK (Ali)*
 * Forcer une politique de mots de passe forts ==> *OK (Ali)*
-* Interdire la consultation des messages dont les ID ne sont pas autorisés ==> *AF (Ali)*
+* Interdire la consultation des messages dont les ID ne sont pas autorisés ==> *OK (Ali)*
 * Rajouter une vérification du mot de passe lors du changement ==> *OK (Ali)*
