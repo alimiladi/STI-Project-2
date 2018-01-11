@@ -95,8 +95,11 @@
 								echo "<script>alert(\"Your password must contain at least:\\n- 1 upper case letter\\n- 1 lower case letter\\n- 1 number\\n- 8 charcters length!\");</script>";
 							}
 						}
+						else {
+							echo "<script type='text/javascript'>alert('Error \\nPassword doesn\\'t match!');</script>";
+						}
 					}
-					else{
+					else {
 						echo "<script type='text/javascript'>alert('Forbidden \\nEmpty password!');</script>";
 					}
 				}

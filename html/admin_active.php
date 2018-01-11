@@ -39,44 +39,57 @@
 				$dbconn->setAttribute(PDO::ATTR_ERRMODE,
 						    PDO::ERRMODE_EXCEPTION);
 
-				//Checking for checkboxes validity with protection against SQL injections
-				if(isset($_POST['active'])){
-					if(isset($_POST['admin'])){
-						$update = $dbconn->prepare("UPDATE users SET active = '1', admin='1' WHERE id = :id");
-						$update->execute(array('id' => $id));
-					}
-					else{
-						$update = $dbconn->prepare("UPDATE users SET active = '1', admin='0' WHERE id = :id");
-						$update->execute(array('id' => $id));
-					}
-				}
-				else{
-					if(isset($_POST['admin'])){
-						$update = $dbconn->prepare("UPDATE users SET active = '0', admin='1' WHERE id = :id");
-						$update->execute(array('id' => $id));
-					}
-					else{
-						$update = $dbconn->prepare("UPDATE users SET active = '0', admin='0' WHERE id = :id");
-						$update->execute(array('id' => $id));
-					}
-				}
-				if (!empty($_POST['password'])) {
-				// Crypting the password with the hash() function
-						$password = hash('sha256', filter_var($_POST['password'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS));		
-						
-						// Protecting against SQL injections with a prepared statement
-						$update = $dbconn->prepare("UPDATE users SET password = :password WHERE id = :id");
-						$update->execute(array('password' => $password, 'id' => $id));
-				}
-				else {
-					echo "<script>alert('Error ! Empty password !');</script>";
-				}
+				if (isset($_POST['password'])) {
+					if (!empty($_POST['password'])) {
+						// Forcing a strong password policy
+						$uppercase = preg_match('/[A-Z]/', $_POST['password']);
+						$lowercase = preg_match('/[a-z]/', $_POST['password']);
+						$number    = preg_match('/[0-9]/', $_POST['password']);
 
+						if($uppercase == 1 && $lowercase == 1 && $number == 1 && strlen($_POST['password']) > 8) {
+
+							//Checking for checkboxes validity with protection against SQL injections
+							if(isset($_POST['active'])){
+								if(isset($_POST['admin'])){
+									$update = $dbconn->prepare("UPDATE users SET active = '1', admin='1' WHERE id = :id");
+									$update->execute(array('id' => $id));
+								}
+								else{
+									$update = $dbconn->prepare("UPDATE users SET active = '1', admin='0' WHERE id = :id");
+									$update->execute(array('id' => $id));
+								}
+							}
+							else{
+								if(isset($_POST['admin'])){
+									$update = $dbconn->prepare("UPDATE users SET active = '0', admin='1' WHERE id = :id");
+									$update->execute(array('id' => $id));
+								}
+								else{
+									$update = $dbconn->prepare("UPDATE users SET active = '0', admin='0' WHERE id = :id");
+									$update->execute(array('id' => $id));
+								}
+							}
+							// Crypting the password with the hash() function
+							$password = hash('sha256', filter_var($_POST['password'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS));		
+							
+							// Protecting against SQL injections with a prepared statement
+							$update = $dbconn->prepare("UPDATE users SET password = :password WHERE username = :username");
+							$update->execute(array('password' => $password, 'username' => $username));
+							
+							echo "<script>alert('Changes saved successfully');location='all_users.php';</script>";
+							
+						}
+						else {
+							echo "<script>alert(\"Your password must contain at least:\\n- 1 upper case letter\\n- 1 lower case letter\\n- 1 number\\n- 8 charcters length!\");location='all_users.php';</script>";
+						}
+					}
+					else {
+						echo "<script type='text/javascript'>alert('Forbidden \\nEmpty password!');location='all_users.php'</script>";
+					}
+				}
+				
 				// Close file db connection
-	    			$dbconn = null;
-
-				// Redirect to originating page
-				header("location: all_users.php");		
+	    			$dbconn = null;	
 			}
 			catch(PDOException $e) {
 				// Print PDOException message

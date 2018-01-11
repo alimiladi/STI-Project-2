@@ -80,45 +80,66 @@
 				// Checking whether fields are correctly set by user
 				if(isset($_POST['Username']) && isset($_POST['Password'])){
 					if (!empty($_POST['Username']) && !empty($_POST['Password'])) {
-						// Password crypting with hash() function
-						$password = hash('sha256', $_POST['Password']);
+						// Forcing a strong password policy
+						$uppercase = preg_match('/[A-Z]/', $_POST['Password']);
+						$lowercase = preg_match('/[a-z]/', $_POST['Password']);
+						$number    = preg_match('/[0-9]/', $_POST['Password']);
 
-						$username = filter_var($_POST['Username'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
+						if($uppercase == 1 && $lowercase == 1 && $number == 1 && strlen($_POST['Password']) > 8) {
+							// Crypting the password with the hash() function
+							$password = hash('sha256', filter_var($_POST['Password'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS));	
+							$username = filter_var($_POST['Username'], FILTER_SANITIZE_STRING | FILTER_SANITIZE_SPECIAL_CHARS);
 
-						// Checking for checkboxes validity with prepared statements to protect us against SQL injections
-						if(isset($_POST['active'])) {
-							if(isset($_POST['admin'])) {
-								$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
-								VALUES (:username, '1', :password, '1')");
-								$insert->execute(array('username' => $username, 'password' => $password));
-							}
-							else{
-								$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
-								VALUES (:username, '1', :password, '0')");
-								$insert->execute(array('username' => $username, 'password' => $password));
-							}
-						}
-						else{
-							if(isset($_POST['admin'])) {
-									$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
-									VALUES (:username, '0', :password, '1')");
-									$insert->execute(array('username' => $username, 'password' => $password));
+							// Checking for existing users
+							$result_user = $dbconn->prepare("SELECT * FROM users WHERE username = :username");
+						    $result_user->execute(array('username' => $username));
+						    $user = $result_user->fetch();
+
+						    if (empty($user)) {
+						    echo "string";
+								// Checking for checkboxes validity with prepared statements to protect us against SQL injections
+								if(isset($_POST['active'])) {
+									if(isset($_POST['admin'])) {
+										$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
+										VALUES (:username, '1', :password, '1')");
+										$insert->execute(array('username' => $username, 'password' => $password));
+									}
+									else{
+										$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
+										VALUES (:username, '1', :password, '0')");
+										$insert->execute(array('username' => $username, 'password' => $password));
+									}
 								}
 								else{
-									$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
-									VALUES (:username, '0', :password, '0')");
-									$insert->execute(array('username' => $username, 'password' => $password));
-								}
+									if(isset($_POST['admin'])) {
+											$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
+											VALUES (:username, '0', :password, '1')");
+											$insert->execute(array('username' => $username, 'password' => $password));
+										}
+										else{
+											$insert = $dbconn->prepare("INSERT INTO users (username, active, password, admin)
+											VALUES (:username, '0', :password, '0')");
+											$insert->execute(array('username' => $username, 'password' => $password));
+										}
+								}								
+								echo "<script>alert('User created successfully !');location='manage_users.php';</script>";
+						    }
+							else {
+								echo "<script>alert('User already exists !\\nPlease change the username !');</script>";
+							}
+						}
+						else {
+							echo "<script>alert(\"Your password must contain at least:\\n- 1 upper case letter\\n- 1 lower case letter\\n- 1 number\\n- 8 charcters length!\");</script>";
 						}
 					}
 					else {
-						echo "<script>alert('Error ! Please fill all the required fields !');</script>";
+						echo "<script type='text/javascript'>alert('Forbidden \\nPlease fill all the required fields !');</script>";
 					}
 				}
-
 				// Close file db connection
 	    			$dbconn = null;
 			}
+
 			catch(PDOException $e) {
 				// Print PDOException message
 				echo $e->getMessage();
