@@ -96,7 +96,6 @@
 						    $user = $result_user->fetch();
 
 						    if (empty($user)) {
-						    echo "string";
 								// Checking for checkboxes validity with prepared statements to protect us against SQL injections
 								if(isset($_POST['active'])) {
 									if(isset($_POST['admin'])) {
