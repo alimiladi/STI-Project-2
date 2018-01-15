@@ -100,21 +100,21 @@
 							'id' => '0',
 							'username' => 'admin',
 							'active' => 1,
-							'password' => hash('sha256', 'admin'),
+							'password' => hash('sha256', 'Admin12345'),
 							'admin' => 1
 						),
 						array(
 							'id' => '1',
 							'username' => 'bob',
 							'active' => 1,
-							'password' => hash('sha256', 'bob'),
+							'password' => hash('sha256', 'Bob12345'),
 							'admin' => 0
 						),
 						array(
 							'id' => '2',
 							'username' => 'alice',
 							'active' => 1,
-							'password' => hash('sha256', 'alice'),
+							'password' => hash('sha256', 'Alice12345'),
 							'admin' => 0
 						)
 						);
